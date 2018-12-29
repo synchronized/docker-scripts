@@ -1,0 +1,19 @@
+* 初始化副本集
+** 注意
+- 只有primary节点需要创建用户,其他数据节点不能写入任何数据,否则初始化失败
+- 节点之间需要使用keyFile方式进行验证
+- 
+
+** 在primary节点执行初始化脚本(创建了用户的那个)
+#+BEGIN_SRC javascript
+use admin
+var config = {
+  "_id":"mongo-replicaset",
+  "members":[
+    {"_id":0,"host":"mongodb-db01:27017"},
+    {"_id":1,"host":"mongodb-db02:27017"},
+    {"_id":2,"host":"mongodb-db03:27017", arbiterOnly:true}
+  ]
+};
+rs.initiate(config);
+#+END_SRC
