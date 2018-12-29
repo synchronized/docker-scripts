@@ -1,0 +1,4 @@
+$ volume_backup.sh old_container /srv/www
+$ sudo docker stop old_container && sudo docker rm old_container
+$ sudo docker run -d --name new_container myrepo/new_container
+$ volume_restore.sh new_container

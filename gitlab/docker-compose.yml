@@ -1,0 +1,150 @@
+version: '2'
+
+services:
+  redis:
+    image: redis:3.2-alpine
+    command:
+    - --loglevel warning
+    volumes:
+    - /data/docker/data/gitlab/redis:/data:Z
+
+  mysql:
+    image: mysql:5.6
+    volumes:
+    - /data/docker/data/gitlab/mysql:/var/lib/mysql:Z
+    environment:
+    - MYSQL_DATABASE=gitlabhq_production
+    - MYSQL_USER=gitlab
+    - MYSQL_PASSWORD=123456
+    - MYSQL_ROOT_PASSWORD=123456
+    command: --collation-server=utf8mb4_unicode_ci --character-set-server=utf8mb4
+
+  gitlab:
+    image: sameersbn/gitlab:8.14.5
+    depends_on:
+    - redis
+    - mysql
+    ports:
+    - "1022:22"
+    - "1080:80"
+    volumes:
+    - /data/docker/data/gitlab/gitlab/data:/home/git/data:Z
+    - /data/docker/data/gitlab/gitlab/log:/var/log/gitlab:Z
+    environment:
+    - DEBUG=false
+
+    - DB_ADAPTER=mysql2
+    - DB_HOST=mysql
+    - DB_PORT=3306
+    - DB_USER=gitlab
+    - DB_PASS=123456
+    - DB_NAME=gitlabhq_production
+
+    - REDIS_HOST=redis
+    - REDIS_PORT=6379
+
+    - TZ=Asia/Shanghai
+    - GITLAB_TIMEZONE=Beijing
+
+    - GITLAB_HTTPS=false
+    - SSL_SELF_SIGNED=true
+
+    - GITLAB_HOST=localhost
+    - GITLAB_PORT=1080
+    - GITLAB_SSH_PORT=1022
+    - GITLAB_RELATIVE_URL_ROOT=
+    - GITLAB_SECRETS_DB_KEY_BASE=123456
+    - GITLAB_SECRETS_SECRET_KEY_BASE=123456
+    - GITLAB_SECRETS_OTP_KEY_BASE=123456
+
+    - GITLAB_ROOT_PASSWORD=123456
+    - GITLAB_ROOT_EMAIL=admin@local.com
+
+    - GITLAB_NOTIFY_ON_BROKEN_BUILDS=true
+    - GITLAB_NOTIFY_PUSHER=false
+
+    - GITLAB_EMAIL=
+    - GITLAB_EMAIL_REPLY_TO=
+    - GITLAB_INCOMING_EMAIL_ADDRESS=
+
+    - GITLAB_BACKUP_SCHEDULE=daily
+    - GITLAB_BACKUP_TIME=01:00
+
+    - SMTP_ENABLED=true
+    - SMTP_DOMAIN=yeah.net
+    - SMTP_HOST=smtp.yeah.net
+    - SMTP_PORT=465
+    - SMTP_USER=admin@local.com
+    - SMTP_PASS=123456
+    - SMTP_STARTTLS=true
+    - SMTP_TLS=true
+    - SMTP_AUTHENTICATION=login
+
+    - IMAP_ENABLED=false
+    - IMAP_HOST=imap.163.net
+    - IMAP_PORT=993
+    - IMAP_USER=example@163.com
+    - IMAP_PASS=123456
+    - IMAP_SSL=true
+    - IMAP_STARTTLS=false
+
+    - OAUTH_ENABLED=false
+    - OAUTH_AUTO_SIGN_IN_WITH_PROVIDER=
+    - OAUTH_ALLOW_SSO=
+    - OAUTH_BLOCK_AUTO_CREATED_USERS=true
+    - OAUTH_AUTO_LINK_LDAP_USER=false
+    - OAUTH_AUTO_LINK_SAML_USER=false
+    - OAUTH_EXTERNAL_PROVIDERS=
+
+    - OAUTH_CAS3_LABEL=cas3
+    - OAUTH_CAS3_SERVER=
+    - OAUTH_CAS3_DISABLE_SSL_VERIFICATION=false
+    - OAUTH_CAS3_LOGIN_URL=/cas/login
+    - OAUTH_CAS3_VALIDATE_URL=/cas/p3/serviceValidate
+    - OAUTH_CAS3_LOGOUT_URL=/cas/logout
+
+    - OAUTH_GOOGLE_API_KEY=
+    - OAUTH_GOOGLE_APP_SECRET=
+    - OAUTH_GOOGLE_RESTRICT_DOMAIN=
+
+    - OAUTH_FACEBOOK_API_KEY=
+    - OAUTH_FACEBOOK_APP_SECRET=
+
+    - OAUTH_TWITTER_API_KEY=
+    - OAUTH_TWITTER_APP_SECRET=
+
+    - OAUTH_GITHUB_API_KEY=
+    - OAUTH_GITHUB_APP_SECRET=
+    - OAUTH_GITHUB_URL=
+    - OAUTH_GITHUB_VERIFY_SSL=
+
+    - OAUTH_GITLAB_API_KEY=
+    - OAUTH_GITLAB_APP_SECRET=
+
+    - OAUTH_BITBUCKET_API_KEY=
+    - OAUTH_BITBUCKET_APP_SECRET=
+
+    - OAUTH_SAML_ASSERTION_CONSUMER_SERVICE_URL=
+    - OAUTH_SAML_IDP_CERT_FINGERPRINT=
+    - OAUTH_SAML_IDP_SSO_TARGET_URL=
+    - OAUTH_SAML_ISSUER=
+    - OAUTH_SAML_LABEL="Our SAML Provider"
+    - OAUTH_SAML_NAME_IDENTIFIER_FORMAT=urn:oasis:names:tc:SAML:2.0:nameid-format:transient
+    - OAUTH_SAML_GROUPS_ATTRIBUTE=
+    - OAUTH_SAML_EXTERNAL_GROUPS=
+    - OAUTH_SAML_ATTRIBUTE_STATEMENTS_EMAIL=
+    - OAUTH_SAML_ATTRIBUTE_STATEMENTS_NAME=
+    - OAUTH_SAML_ATTRIBUTE_STATEMENTS_FIRST_NAME=
+    - OAUTH_SAML_ATTRIBUTE_STATEMENTS_LAST_NAME=
+
+    - OAUTH_CROWD_SERVER_URL=
+    - OAUTH_CROWD_APP_NAME=
+    - OAUTH_CROWD_APP_PASSWORD=
+
+    - OAUTH_AUTH0_CLIENT_ID=
+    - OAUTH_AUTH0_CLIENT_SECRET=
+    - OAUTH_AUTH0_DOMAIN=
+
+    - OAUTH_AZURE_API_KEY=
+    - OAUTH_AZURE_API_SECRET=
+    - OAUTH_AZURE_TENANT_ID=
