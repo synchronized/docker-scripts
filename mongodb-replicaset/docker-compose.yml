@@ -1,0 +1,47 @@
+version: '2'
+services:
+  mongo-db01:
+    name: mongo-db01
+    image: mongo:3.2
+    environment:
+      - "MONGO_INITDB_ROOT_USERNAME=mongo"
+      - "MONGO_INITDB_ROOT_PASSWORD=123456"
+    ports:
+      - "27017:27017"
+    volumes:
+      - "db01-data:/data/db"
+    command: --replSet mongo-replicaset
+
+  mongo-db02:
+    name: mongo-db02
+    image: mongo:3.2
+    environment:
+      - "MONGO_INITDB_ROOT_USERNAME=mongo"
+      - "MONGO_INITDB_ROOT_PASSWORD=123456"
+    ports:
+      - "27018:27017"
+    volumes:
+      - "db02-data:/data/db"
+    command: --replSet mongo-replicaset
+
+  mongo-db03:
+    name: mongo-db03
+    image: mongo:3.2
+    environment:
+      - "MONGO_INITDB_ROOT_USERNAME=mongo"
+      - "MONGO_INITDB_ROOT_PASSWORD=123456"
+    ports:
+      - "27019:27017"
+    volumes:
+      - "db03-data:/data/db"
+    command: --replSet mongo-replicaset
+
+volumes:
+    db01-data:
+      driver: local
+
+    db02-data:
+      driver: local
+
+    db03-data:
+      driver: local
