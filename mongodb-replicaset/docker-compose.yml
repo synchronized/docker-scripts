@@ -1,6 +1,7 @@
 version: '2'
 services:
   mongodb-db01:
+    container_name: mongodb-db01
     image: mongo:3.2
     restart: always
     environment:
@@ -10,9 +11,11 @@ services:
       - "27017:27017"
     volumes:
       - "db01-data:/data/db"
-    command: --replSet mongo-replicaset
+      - "./keyfile.key:/data/configdb/mongodb.key:ro"
+    command: --replSet mongo-replicaset --keyFile /etc/mongodb.key --clusterAuthMode keyFile
 
   mongodb-db02:
+    container_name: mongodb-db02
     image: mongo:3.2
     environment:
       - "MONGO_INITDB_ROOT_USERNAME=mongo"
@@ -21,9 +24,11 @@ services:
       - "27018:27017"
     volumes:
       - "db02-data:/data/db"
-    command: --replSet mongo-replicaset
+      - "./keyfile.key:/data/configdb/mongodb.key:ro"
+    command: --replSet mongo-replicaset --keyFile /etc/mongodb.key --clusterAuthMode keyFile
 
   mongodb-db03:
+    container_name: mongodb-db03
     image: mongo:3.2
     environment:
       - "MONGO_INITDB_ROOT_USERNAME=mongo"
@@ -32,7 +37,8 @@ services:
       - "27019:27017"
     volumes:
       - "db03-data:/data/db"
-    command: --replSet mongo-replicaset
+      - "./keyfile.key:/data/configdb/mongodb.key:ro"
+    command: --replSet mongo-replicaset --keyFile /etc/mongodb.key --clusterAuthMode keyFile
 
 volumes:
     db01-data:
