@@ -7,6 +7,12 @@
 ** 生成keyfile
 #+BEGIN_SRC shell
 openssl rand -base64 120 > keyfile.key
+chmod 600 keyfile.key
+#+END_SRC
+
+** 如果要在数据节点使用需要运行命令
+#+BEGIN_SRC javascript
+db.setSlaveOk()
 #+END_SRC
 
 ** 在primary节点执行初始化脚本(创建了用户的那个)
