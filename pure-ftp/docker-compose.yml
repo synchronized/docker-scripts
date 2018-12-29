@@ -6,7 +6,7 @@ services:
       - FTP_USER_NAME=bob
       - FTP_USER_PASS=12345
       - FTP_USER_HOME=/home/bob
-      - PUBLICHOST=192.168.1.37
+      - PUBLICHOST=localhost
     ports:
       - "21:21"
       - "30000-30009:30000-30009"
