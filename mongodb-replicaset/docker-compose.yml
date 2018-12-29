@@ -11,34 +11,34 @@ services:
       - "27017:27017"
     volumes:
       - "db01-data:/data/db"
-      - "./keyfile.key:/data/configdb/mongodb.key:ro"
-    command: --replSet mongo-replicaset --keyFile /etc/mongodb.key --clusterAuthMode keyFile
+      - "./keyfile.key:/data/configdb/mongodb.key"
+    command: --replSet mongo-replicaset --keyFile /data/configdb/mongodb.key --clusterAuthMode keyFile
 
   mongodb-db02:
     container_name: mongodb-db02
     image: mongo:3.2
-    environment:
-      - "MONGO_INITDB_ROOT_USERNAME=mongo"
-      - "MONGO_INITDB_ROOT_PASSWORD=123456"
+    #environment:
+    #  - "MONGO_INITDB_ROOT_USERNAME=mongo"
+    #  - "MONGO_INITDB_ROOT_PASSWORD=123456"
     ports:
       - "27018:27017"
     volumes:
       - "db02-data:/data/db"
-      - "./keyfile.key:/data/configdb/mongodb.key:ro"
-    command: --replSet mongo-replicaset --keyFile /etc/mongodb.key --clusterAuthMode keyFile
+      - "./keyfile.key:/data/configdb/mongodb.key"
+    command: --replSet mongo-replicaset --keyFile /data/configdb/mongodb.key --clusterAuthMode keyFile
 
   mongodb-db03:
     container_name: mongodb-db03
     image: mongo:3.2
-    environment:
-      - "MONGO_INITDB_ROOT_USERNAME=mongo"
-      - "MONGO_INITDB_ROOT_PASSWORD=123456"
+    #environment:
+    #  - "MONGO_INITDB_ROOT_USERNAME=mongo"
+    #  - "MONGO_INITDB_ROOT_PASSWORD=123456"
     ports:
       - "27019:27017"
     volumes:
       - "db03-data:/data/db"
-      - "./keyfile.key:/data/configdb/mongodb.key:ro"
-    command: --replSet mongo-replicaset --keyFile /etc/mongodb.key --clusterAuthMode keyFile
+      - "./keyfile.key:/data/configdb/mongodb.key"
+    command: --replSet mongo-replicaset --keyFile /data/configdb/mongodb.key --clusterAuthMode keyFile
 
 volumes:
     db01-data:
