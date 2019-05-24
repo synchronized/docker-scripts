@@ -1,0 +1,29 @@
+version: '2'
+
+services:
+  openldap:
+    hostname: openldap
+    container_name: openldap
+    image: osixia/openldap
+    ports:
+    - "10389:389"
+    - "10636:636"
+    volumes:
+    - /home/sunday/workspace/docker/data/openldap/ldapdata:/var/lib/ldap
+    - /home/sunday/workspace/docker/data/openldap/ldapcfg:/etc/ldap/slapd.d
+    environment:
+    - LDAP_ORGANISATION="zhougames"
+    - LDAP_DOMAIN="zhougames.com"
+    - LDAP_ADMIN_PASSWORD="admin"
+    - LDAP_CONFIG_PASSWORD="config"
+
+  lam:
+    hostname: lam
+    container_name: lam
+    image: zhangsean/lam
+    depends_on:
+    - openldap
+    ports:
+      - "10081:80"
+
+

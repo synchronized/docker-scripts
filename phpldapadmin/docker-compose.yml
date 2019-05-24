@@ -1,0 +1,11 @@
+version: '2'
+
+services:
+  phpldapadmin:
+    image: osixia/phpldapadmin
+    ports:
+      - "10080:80"
+    environment:
+    - PHPLDAPADMIN_LDAP_HOSTS=192.168.56.102
+    - PHPLDAPADMIN_HTTPS=false
+
