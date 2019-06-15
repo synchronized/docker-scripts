@@ -1,0 +1,9 @@
+version: '2'
+
+services:
+  alpaca:
+    image: alpaca:1.0-SNAPSHOT
+    hostname: alpacazmxy 
+    ports:
+    - 9001:8080
+

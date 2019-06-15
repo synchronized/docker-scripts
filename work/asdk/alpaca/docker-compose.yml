@@ -1,0 +1,56 @@
+version: '2'
+
+services:
+  mysql:
+    image: mysql:5.7
+    environment:
+    - MYSQL_ROOT_PASSWORD=123456
+    hostname: mysql
+    volumes:
+    - /home/sunday/workspace/docker/data/alpaca/mysql/conf.d:/etc/mysql/conf.d:ro
+    - /home/sunday/workspace/docker/data/alpaca/mysql/data:/var/lib/mysql:Z
+    - /home/sunday/workspace/docker/data/alpaca/mysql/log:/var/log/mysql:Z
+    ports:
+    - 3306:3306
+
+  redis:
+    image: "redis:4.0"
+    hostname: redis
+    volumes:
+    - /home/sunday/workspace/docker/data/alpaca/redis/data:/data
+    ports:
+    - 6379:6379
+    command: --appendonly yes --requirepass WQmGhL1BK8
+
+  canary:
+    image: "paydayloan-canary:prod-1.0-SNAPSHOT"
+    hostname: canaryserver
+    volumes:
+    - /home/sunday/workspace/docker/data/alpaca/canary/log:/app/log
+    ports:
+    - 8080:8080
+    depends_on:
+    - redis
+    - mysql 
+
+  billy:
+    image: "paydayloan-billy:prod-1.0-SNAPSHOT"
+    hostname: billy
+    volumes:
+    - /home/sunday/workspace/docker/data/alpaca/billy/log:/app/log
+    depends_on:
+    - redis
+    - mysql 
+    - canary
+
+  grouse:
+    image: "paydayloan-grouse:prod-1.0-SNAPSHOT"
+    hostname: grouse
+    volumes:
+    - /home/sunday/workspace/docker/data/alpaca/grouse/log:/app/log
+    ports:
+    - 8081:8080
+    depends_on:
+    - redis
+    - mysql 
+    - canary

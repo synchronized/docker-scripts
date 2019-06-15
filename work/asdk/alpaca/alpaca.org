@@ -1,0 +1,9 @@
+* 安装拉取镜像
+docker pull mysql:5.6
+docker pull memcached:1.4-alpine
+
+* 修改配置
+mkdir -p ~/workspace/docker/data/alpaca/mysql/conf.d
+
+cp my-huge.cnf ~/workspace/docker/data/alpaca/mysql/conf.d/
+

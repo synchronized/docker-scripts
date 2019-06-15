@@ -1,0 +1,65 @@
+version: '2'
+
+services:
+  mysql:
+    image: mysql:5.6
+    environment:
+    - MYSQL_ROOT_PASSWORD=123456
+    - MYSQL_USER=kangaroo
+    - MYSQL_PASSWORD=O2rZQmuTgR
+    - MYSQL_DATABASE=kangaroo
+    hostname: mysql
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    volumes:
+    - /home/sunday/workspace/docker/data/kangaroo/mysql/conf.d:/etc/mysql/conf.d:ro
+    - /home/sunday/workspace/docker/data/kangaroo/mysql/data:/var/lib/mysql:Z
+    - /home/sunday/workspace/docker/data/kangaroo/mysql/log:/var/log/mysql:Z
+    ports:
+    - 13306:3306
+
+  redis:
+    image: "redis:4.0"
+    hostname: redis
+    volumes:
+    - /home/sunday/workspace/docker/data/kangaroo/redis/data:/data
+    ports:
+    - 16379:6379
+    command: --appendonly yes --requirepass qeBNZS4FvK
+
+  kangaroo:
+    image: "blanknote-canary:prod-1.0-SNAPSHOT"
+    hostname: kangaroo
+    volumes:
+    - /home/sunday/workspace/docker/data/kangaroo/kangaroo/log:/app/log
+    ports:
+    - 18080:8080
+    depends_on:
+    - redis
+    - mysql
+
+  billy:
+    image: "blanknote-billy:prod-1.0-SNAPSHOT"
+    hostname: billy
+    volumes:
+    - /home/sunday/workspace/docker/data/kangaroo/billy/log:/app/log
+    depends_on:
+    - kangaroo
+
+  ladybird:
+    image: "blanknote-ladybird:prod-1.0-SNAPSHOT"
+    hostname: ladybird
+    volumes:
+    - /home/sunday/workspace/docker/data/kangaroo/ladybird/log:/app/log
+    depends_on:
+    - kangaroo
+
+  grouse:
+    image: "blanknote-grouse:prod-1.0-SNAPSHOT"
+    hostname: grouse
+    volumes:
+    - /home/sunday/workspace/docker/data/kangaroo/grouse/log:/app/log
+    ports:
+    - 18081:8080
+    depends_on:
+    - kangaroo
+
