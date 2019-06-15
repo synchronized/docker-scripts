@@ -2,34 +2,37 @@ version: '2'
 
 services:
   redis:
+    restart: always
     image: redis:3.2-alpine
     command:
     - --loglevel warning
     volumes:
-    - /data/docker/data/gitlab/redis:/data:Z
+    - /home/sunday/workspace/docker/data/gitlab/redis:/data:Z
 
   mysql:
+    restart: always
     image: mysql:5.6
     volumes:
-    - /data/docker/data/gitlab/mysql:/var/lib/mysql:Z
+    - /home/sunday/workspace/docker/data/gitlab/mysql:/var/lib/mysql:Z
     environment:
     - MYSQL_DATABASE=gitlabhq_production
     - MYSQL_USER=gitlab
-    - MYSQL_PASSWORD=123456
-    - MYSQL_ROOT_PASSWORD=123456
-    command: --collation-server=utf8mb4_unicode_ci --character-set-server=utf8mb4
+    - MYSQL_PASSWORD=LCmW43PPhlJK
+    - MYSQL_ROOT_PASSWORD=9mxlT2zjP4xS
+    command: --collation-server=utf8_unicode_ci --character-set-server=utf8
 
   gitlab:
+    restart: always
     image: sameersbn/gitlab:8.14.5
     depends_on:
     - redis
-    - mysql
+    - mysql 
     ports:
-    - "1022:22"
-    - "1080:80"
+    - "20022:22"
+    - "20080:80"
     volumes:
-    - /data/docker/data/gitlab/gitlab/data:/home/git/data:Z
-    - /data/docker/data/gitlab/gitlab/log:/var/log/gitlab:Z
+    - /home/sunday/workspace/docker/data/gitlab/gitlab/data:/home/git/data:Z
+    - /home/sunday/workspace/docker/data/gitlab/gitlab/log:/var/log/gitlab:Z
     environment:
     - DEBUG=false
 
@@ -37,7 +40,7 @@ services:
     - DB_HOST=mysql
     - DB_PORT=3306
     - DB_USER=gitlab
-    - DB_PASS=123456
+    - DB_PASS=LCmW43PPhlJK
     - DB_NAME=gitlabhq_production
 
     - REDIS_HOST=redis
@@ -50,15 +53,15 @@ services:
     - SSL_SELF_SIGNED=true
 
     - GITLAB_HOST=localhost
-    - GITLAB_PORT=1080
-    - GITLAB_SSH_PORT=1022
+    - GITLAB_PORT=20443
+    - GITLAB_SSH_PORT=20022
     - GITLAB_RELATIVE_URL_ROOT=
-    - GITLAB_SECRETS_DB_KEY_BASE=123456
-    - GITLAB_SECRETS_SECRET_KEY_BASE=123456
-    - GITLAB_SECRETS_OTP_KEY_BASE=123456
+    - GITLAB_SECRETS_DB_KEY_BASE=259Cqpj2q644M7Hd6J47HvpBfk5jPTG5Bf5DTS9b7qghZsGfdHHCJs2Vzq6MWnPf
+    - GITLAB_SECRETS_SECRET_KEY_BASE=B3ppclcFJzgkVWMcXr6gff9CqtPjZcFfhS8qRczxfVCbKHZ4lmlVNl2PxhTzRXJz
+    - GITLAB_SECRETS_OTP_KEY_BASE=JNmrG3bMSD33SW6lFvkmlr8pRJ9nhBl9B9bhZDM7lRxSxQxLFt8wVjCB3qpHCCHr
 
-    - GITLAB_ROOT_PASSWORD=123456
-    - GITLAB_ROOT_EMAIL=admin@local.com
+    - GITLAB_ROOT_PASSWORD=9rZkLQfmW9qM96QTbsvR
+    - GITLAB_ROOT_EMAIL=tech_git@51kingstone.com
 
     - GITLAB_NOTIFY_ON_BROKEN_BUILDS=true
     - GITLAB_NOTIFY_PUSHER=false
@@ -74,8 +77,8 @@ services:
     - SMTP_DOMAIN=yeah.net
     - SMTP_HOST=smtp.yeah.net
     - SMTP_PORT=465
-    - SMTP_USER=admin@local.com
-    - SMTP_PASS=123456
+    - SMTP_USER=lightstory@yeah.net
+    - SMTP_PASS=gwzeiiyoligvnwdh
     - SMTP_STARTTLS=true
     - SMTP_TLS=true
     - SMTP_AUTHENTICATION=login

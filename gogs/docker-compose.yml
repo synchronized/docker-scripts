@@ -1,40 +1,23 @@
 version: '2'
 services:
-  postgres:
-    image: postgres:9.5
-    restart: always
-    environment:
-      - "POSTGRES_USER=${POSTGRES_USER}"
-      - "POSTGRES_PASSWORD=${POSTGRES_PASSWORD}"
-      - "POSTGRES_DB=gogs"
+  mysql:
+    image: mysql:latest
     volumes:
-      - "db-data:/var/lib/postgresql/data"
-    networks:
-      - gogs
+    - /home/sunday/workspace/docker/data/gogs/mysql:/var/lib/mysql:Z
+    environment:
+    - MYSQL_DATABASE=gogs
+    - MYSQL_USER=gogs
+    - MYSQL_PASSWORD=LCmW43PPhlJK
+    - MYSQL_ROOT_PASSWORD=9mxlT2zjP4xS
+    command: --collation-server=utf8mb4_unicode_ci --character-set-server=utf8mb4
+
   gogs:
-    image: gogs/gogs:latest
-    restart: always
-    ports:
-      - "1022:22"
-      - "3000:3000"
-    links:
-      - postgres
-    environment:
-      - "RUN_CROND=true"
-    networks:
-      - gogs
-    volumes:
-      - "gogs-data:/data"
+    image: gogs/gogs
+    container_name: gogs
     depends_on:
-      - postgres
-
-networks:
-  gogs:
-    driver: bridge
-
-volumes:
-  db-data:
-    driver: local
-
-  gogs-data:
-    driver: local
+      - mysql 
+    volumes:
+      - /home/sunday/workspace/docker/data/gogs/gogs:/data
+    ports:
+      - "10222:22"
+      - "10280:3000"

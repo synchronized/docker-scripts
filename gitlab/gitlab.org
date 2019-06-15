@@ -4,6 +4,7 @@
 - [[https://hub.docker.com/_/mysql/][docker-mysql 部署]]
 - [[https://hub.docker.com/_/redis/][docker-redis 部署]]
 - [[https://hub.docker.com/r/sameersbn/gitlab/][docker-gitlab 部署]]
+- 
 
 ** 安装 docker
 见:[[https://docs.docker.com/engine/installation/][安装 docker]]
@@ -22,11 +23,11 @@ openssl genrsa -out gitlab.key 2048
 openssl req -new -key gitlab.key -out gitlab.csr
 openssl x509 -req -days 3650 -in gitlab.csr -signkey gitlab.key -out gitlab.crt
 openssl dhparam -out dhparam.pem 2048
-mkdir -p /data/docker/data/gitlab/gitlab/data/certs
-cp gitlab.key /data/docker/data/gitlab/gitlab/data/certs/
-cp gitlab.crt /data/docker/data/gitlab/gitlab/data/certs/
-cp dhparam.pem /data/docker/data/gitlab/gitlab/data/certs/
-chmod 400 /data/docker/data/gitlab/gitlab/data/certs/gitlab.key
+mkdir -p /home/sunday/workspace/docker/data/gitlab/gitlab/data/certs
+cp gitlab.key /home/sunday/workspace/docker/data/gitlab/gitlab/data/certs/
+cp gitlab.crt /home/sunday/workspace/docker/data/gitlab/gitlab/data/certs/
+cp dhparam.pem /home/sunday/workspace/docker/data/gitlab/gitlab/data/certs/
+chmod 400 /home/sunday/workspace/docker/data/gitlab/gitlab/data/certs/gitlab.key
 #+END_SRC
 
 ** 启动相关容器
@@ -36,17 +37,17 @@ docker run -d  \
     --name gitlab-mysql \
     -e MYSQL_DATABASE=gitlabhq_production \
     -e MYSQL_USER=gitlab \
-    -e MYSQL_PASSWORD=123456 \
-    -e MYSQL_ROOT_PASSWORD=123456 \
-    -v /data/docker/data/gitlab/mysql/:/var/lib/mysql \
-    mysql:5.6
+    -e MYSQL_PASSWORD=LCmW43PPhlJK \
+    -e MYSQL_ROOT_PASSWORD=9mxlT2zjP4xS \
+    -v /home/sunday/workspace/docker/data/gitlab/mysql/:/var/lib/mysql \
+    mysql:5.6 
 #+END_SRC
 
 #+BEGIN_SRC shell
 sudo docker run -d \
     --restart on-failure:5 \
     --name gitlab-redis \
-    -v /data/docker/data/gitlab/redis/:/data \
+    -v /home/sunday/workspace/docker/data/gitlab/redis/:/data \
     redis:3.2-alpine
 #+END_SRC
 
@@ -54,27 +55,27 @@ sudo docker run -d \
 docker run --name='gitlab' \
     --link gitlab-mysql:mysql \
     --link gitlab-redis:redisio \
-    -p 1022:22 \
-    -p 1080:80 \
-    -p 1443:443 \
-    -e 'GITLAB_SSH_PORT=1022' \
-    -e 'GITLAB_PORT=1443' \
+    -p 10022:22 \
+    -p 10080:80 \
+    -p 10443:443 \
+    -e 'GITLAB_SSH_PORT=10022' \
+    -e 'GITLAB_PORT=10443' \
     -e 'GITLAB_HTTPS=true' \
     -e 'SSL_SELF_SIGNED=true' \
     -e 'GITLAB_HOST=localhost' \
-    -e 'GITLAB_EMAIL=admin@local.com' \
+    -e 'GITLAB_EMAIL=sund@51kingstone.com' \
     -e 'SMTP_ENABLED=true' \
     -e 'SMTP_DOMAIN=163.com' \
     -e 'SMTP_HOST=smtp.ym.163.com' \
     -e 'SMTP_PORT=465' \
     -e 'SMTP_STARTTLS=true' \
     -e 'SMTP_TLS=true' \
-    -e 'SMTP_USER=admin@local.com' \
-    -e 'SMTP_PASS=123456' \
+    -e 'SMTP_USER=sund@51kingstone.com' \
+    -e 'SMTP_PASS=51sd94hpgne' \
     -e 'SMTP_AUTHENTICATION=login' \
-    -e 'GITLAB_SECRETS_DB_KEY_BASE=123456' \
-    -e 'GITLAB_SECRETS_SECRET_KEY_BASE=123456' \
-    -e 'GITLAB_SECRETS_OTP_KEY_BASE=123456' \
+    -e 'GITLAB_SECRETS_DB_KEY_BASE=259Cqpj2q644M7Hd6J47HvpBfk5jPTG5Bf5DTS9b7qghZsGfdHHCJs2Vzq6MWnPf' \
+    -e 'GITLAB_SECRETS_SECRET_KEY_BASE=B3ppclcFJzgkVWMcXr6gff9CqtPjZcFfhS8qRczxfVCbKHZ4lmlVNl2PxhTzRXJz' \
+    -e 'GITLAB_SECRETS_OTP_KEY_BASE=JNmrG3bMSD33SW6lFvkmlr8pRJ9nhBl9B9bhZDM7lRxSxQxLFt8wVjCB3qpHCCHr' \
     -e 'DB_ADAPTER=mysql2' \
     -e 'DB_HOST=mysql' \
     -e 'DB_NAME=gitlabhq_production' \
@@ -82,8 +83,8 @@ docker run --name='gitlab' \
     -e 'DB_PASS=123456' \
     -e 'REDIS_HOST=redisio' \
     -e 'REDIS_PORT=6379' \
-    -v /data/docker/data/gitlab/gitlab/data:/home/git/data \
-    -v /data/docker/data/gitlab/gitlab/log:/var/log/gitlab \
+    -v /home/sunday/workspace/docker/data/gitlab/gitlab/data:/home/git/data \
+    -v /home/sunday/workspace/docker/data/gitlab/gitlab/log:/var/log/gitlab \
     sameersbn/gitlab
 #+END_SRC
 
@@ -105,13 +106,13 @@ openssl x509 -req -days 3650 -in gitlab.csr -signkey gitlab.key -out gitlab.crt
 # Organization Name (eg, company) [Internet Widgits Pty Ltd]:Asdk
 # Organizational Unit Name (eg, section) []:TC
 # Common Name (e.g. server FQDN or YOUR name) []:Sunday
-# Email Address []:sunday@daemon.com
+# Email Address []:sund@51kingstone.com
 openssl dhparam -out dhparam.pem 2048
-mkdir -p /data/docker/data/gitlab/gitlab/data/certs
-cp gitlab.key /data/docker/data/gitlab/gitlab/data/certs/
-cp gitlab.crt /data/docker/data/gitlab/gitlab/data/certs/
-cp dhparam.pem /data/docker/data/gitlab/gitlab/data/certs/
-chmod 400 /data/docker/data/gitlab/gitlab/data/certs/gitlab.key
+mkdir -p /home/sunday/workspace/docker/data/gitlab/gitlab/data/certs
+cp gitlab.key /home/sunday/workspace/docker/data/gitlab/gitlab/data/certs/
+cp gitlab.crt /home/sunday/workspace/docker/data/gitlab/gitlab/data/certs/
+cp dhparam.pem /home/sunday/workspace/docker/data/gitlab/gitlab/data/certs/
+chmod 400 /home/sunday/workspace/docker/data/gitlab/gitlab/data/certs/gitlab.key
 #+END_SRC
 
 ** 启动相关容器
