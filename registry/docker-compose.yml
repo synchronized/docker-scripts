@@ -1,0 +1,21 @@
+version: '2'
+
+services:
+  nginx:
+    image: "nginx:1.9"
+    ports:
+      - 5043:443
+    links:
+      - registry:registry
+    volumes:
+      - /home/sunday/workspace/docker/data/registry/nginx:/etc/nginx/conf.d:ro
+
+  registry:
+    image: registry:2
+    ports:
+      - 127.0.0.1:5000:5000
+    environment:
+      REGISTRY_STORAGE_FILESYSTEM_ROOTDIRECTORY: /data
+    volumes:
+      - /home/sunday/workspace/docker/data/registry/data:/data
+
