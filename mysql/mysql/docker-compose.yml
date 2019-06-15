@@ -1,0 +1,19 @@
+version: '2'
+
+services:
+  mysql57:
+    image: mysql:5.7
+    environment:
+    - MYSQL_ROOT_PASSWORD=123456
+    - MYSQL_USER=kbe
+    - MYSQL_PASSWORD=pwd123456
+    - MYSQL_DATABASE=kbe
+    hostname: mysql
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    volumes:
+    - /home/sunday/workspace/docker/data/mysql/mysql57/conf.d:/etc/mysql/conf.d:ro
+    - /home/sunday/workspace/docker/data/mysql/mysql57/data:/var/lib/mysql:Z
+    - /home/sunday/workspace/docker/data/mysql/mysql57/log:/var/log/mysql:Z
+    ports:
+    - 33306:3306
+

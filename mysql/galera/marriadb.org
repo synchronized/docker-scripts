@@ -1,0 +1,37 @@
+* 安装拉取镜像
+docker pull mariadb
+
+* 修改配置
+** 第一步(先不要开启集群)
+cd ~/workspace/docker/data/galera/
+mkdir -p haproxy
+cp ~/workdoc/install/docker/galera/haproxy.cfg haproxy/
+
+cd ~/workspace/docker/data/galera/
+mkdir -p mariadb{1,2,3}/conf.d/
+cp ~/workdoc/install/docker/galera/my-huge.cnf mariadb1/conf.d/
+cp ~/workdoc/install/docker/galera/my-huge.cnf mariadb2/conf.d/
+cp ~/workdoc/install/docker/galera/my-huge.cnf mariadb3/conf.d/
+
+** 第二部(需要停止集群)
+cp ~/workdoc/install/docker/galera/wsrep.cnf mariadb1/conf.d/
+sed -i "s/{{NODE_LIST}}/172.16.238.11,172.16.238.12,172.16.238.13/" mariadb1/conf.d/wsrep.cnf
+sed -i "s/{{NODE_NAME}}/db01/" mariadb1/conf.d/wsrep.cnf
+sed -i "s/{{NODE_ADDR}}/172.16.238.11/" mariadb1/conf.d/wsrep.cnf
+sed -i "s/{{RSYNC_USER}}/rsync/" mariadb1/conf.d/wsrep.cnf
+sed -i "s/{{RSYNC_PASS}}/123456/" mariadb1/conf.d/wsrep.cnf
+
+cp ~/workdoc/install/docker/galera/wsrep.cnf mariadb2/conf.d/
+sed -i "s/{{NODE_LIST}}/172.16.238.11,172.16.238.12,172.16.238.13/" mariadb2/conf.d/wsrep.cnf
+sed -i "s/{{NODE_NAME}}/db02/" mariadb2/conf.d/wsrep.cnf
+sed -i "s/{{NODE_ADDR}}/172.16.238.12/" mariadb2/conf.d/wsrep.cnf
+sed -i "s/{{RSYNC_USER}}/rsync/" mariadb2/conf.d/wsrep.cnf
+sed -i "s/{{RSYNC_PASS}}/123456/" mariadb2/conf.d/wsrep.cnf
+
+cp ~/workdoc/install/docker/galera/wsrep.cnf mariadb3/conf.d/
+sed -i "s/{{NODE_LIST}}/172.16.238.11,172.16.238.12,172.16.238.13/" mariadb3/conf.d/wsrep.cnf
+sed -i "s/{{NODE_NAME}}/db03/" mariadb3/conf.d/wsrep.cnf
+sed -i "s/{{NODE_ADDR}}/172.16.238.13/" mariadb3/conf.d/wsrep.cnf
+sed -i "s/{{RSYNC_USER}}/rsync/" mariadb3/conf.d/wsrep.cnf
+sed -i "s/{{RSYNC_PASS}}/123456/" mariadb3/conf.d/wsrep.cnf
+

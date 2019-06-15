@@ -1,0 +1,14 @@
+
+* 各种命令
+#+BEGIN_SRC shell
+mkdir -p /home/sunday/workspace/docker/data/percona-galera/
+cd /home/sunday/workspace/docker/data/percona-galera/
+mkdir -p percona-galera-{1,2,3}/conf.d
+cp ~/workdoc/install/docker/percona-galera/my-huge.cnf percona-galera-1/conf.d
+cp ~/workdoc/install/docker/percona-galera/my-huge.cnf percona-galera-2/conf.d
+cp ~/workdoc/install/docker/percona-galera/my-huge.cnf percona-galera-3/conf.d
+
+mkdir haproxy
+cp ~/workdoc/install/docker/percona-galera/haproxy.cfg haproxy
+#+END_SRC
+

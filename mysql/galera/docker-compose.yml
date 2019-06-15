@@ -1,0 +1,85 @@
+version: '2'
+
+services:
+  mariadb1:
+    image: "mariadb:10.1"
+    environment:
+    - MYSQL_ROOT_PASSWORD=123456
+    - MYSQL_USER=rsync
+    - MYSQL_PASSWORD=123456
+    hostname: mariadb1
+    ports:
+    - 13307:3306
+    volumes:
+      - /home/sunday/workspace/docker/data/galera/mariadb1/data:/var/lib/mysql:Z
+      - /home/sunday/workspace/docker/data/galera/mariadb1/conf.d:/etc/mysql/conf.d:ro
+    networks:
+      subnet:
+        ipv4_address: 172.16.238.11
+        ipv6_address: 2001:3984:3989::11
+    command: --collation-server=utf8_unicode_ci --character-set-server=utf8 --wsrep-new-cluster
+
+  mariadb2:
+    image: "mariadb:10.1"
+    environment:
+    - MYSQL_ROOT_PASSWORD=123456
+    - MYSQL_USER=rsync
+    - MYSQL_PASSWORD=123456
+    hostname: mariadb2
+    volumes:
+    - /home/sunday/workspace/docker/data/galera/mariadb2/data:/var/lib/mysql:Z
+    - /home/sunday/workspace/docker/data/galera/mariadb2/conf.d:/etc/mysql/conf.d:ro
+    networks:
+      subnet:
+        ipv4_address: 172.16.238.12
+        ipv6_address: 2001:3984:3989::12
+    command: --collation-server=utf8_unicode_ci --character-set-server=utf8
+    depends_on:
+    - mariadb1
+
+  mariadb3:
+    image: "mariadb:10.1"
+    hostname: mariadb3
+    environment:
+    - MYSQL_ROOT_PASSWORD=123456
+    - MYSQL_USER=rsync
+    - MYSQL_PASSWORD=123456
+    hostname: mariadb3
+    volumes:
+    - /home/sunday/workspace/docker/data/galera/mariadb3/data:/var/lib/mysql:Z
+    - /home/sunday/workspace/docker/data/galera/mariadb3/conf.d:/etc/mysql/conf.d:ro
+    networks:
+      subnet:
+        ipv4_address: 172.16.238.13
+        ipv6_address: 2001:3984:3989::13
+    command: --collation-server=utf8_unicode_ci --character-set-server=utf8
+    depends_on:
+    - mariadb1
+
+  haproxy:
+    image: "haproxy:1.6"
+    ports:
+    - 13306:13306
+    - 8080:8080
+    links:
+    - mariadb1:mariadb1
+    - mariadb2:mariadb2
+    - mariadb3:mariadb3
+    volumes:
+    - /home/sunday/workspace/docker/data/galera/haproxy/haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg:ro
+    networks:
+      subnet:
+        ipv4_address: 172.16.238.10
+        ipv6_address: 2001:3984:3989::10
+
+networks:
+  subnet:
+    driver: bridge
+    #enable_ipv6: true
+    ipam:
+      driver: default
+      config:
+      - subnet: 172.16.238.0/24
+        gateway: 172.16.238.1
+      - subnet: 2001:3984:3989::/64
+        gateway: 2001:3984:3989::1

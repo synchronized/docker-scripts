@@ -1,0 +1,83 @@
+version: '2'
+
+services:
+  mariadb1:
+    #restart: always
+    image: mariadb:10.1
+    hostname: mariadb1
+    environment:
+      - MYSQL_ROOT_PASSWORD=123456
+      - MYSQL_USER=rsync
+      - MYSQL_PASSWORD=123456
+    command: --collation-server=utf8_unicode_ci --character-set-server=utf8 --wsrep-new-cluster
+    volumes:
+      - /home/sunday/workspace/docker/data/mariadb-galera/mariadb1/data:/var/lib/mysql:Z
+      - /home/sunday/workspace/docker/data/mariadb-galera/mariadb1/conf.d:/etc/mysql/conf.d
+    networks:
+      subnet:
+        ipv4_address: 172.16.239.11
+        ipv6_address: 2001:3984:3939::11
+
+  mariadb2:
+    #restart: always
+    image: mariadb:10.1
+    hostname: mariadb2
+    environment:
+      - MYSQL_ROOT_PASSWORD=123456
+      - MYSQL_USER=rsync
+      - MYSQL_PASSWORD=123456
+    command: --collation-server=utf8_unicode_ci --character-set-server=utf8
+    volumes:
+      - /home/sunday/workspace/docker/data/mariadb-galera/mariadb2/data:/var/lib/mysql:Z
+      - /home/sunday/workspace/docker/data/mariadb-galera/mariadb2/conf.d:/etc/mysql/conf.d
+    networks:
+      subnet:
+        ipv4_address: 172.16.239.12
+        ipv6_address: 2001:3984:3939::12
+
+  mariadb3:
+    #restart: always
+    image: mariadb:10.1
+    hostname: mariadb3
+    environment:
+      - MYSQL_ROOT_PASSWORD=123456
+      - MYSQL_USER=rsync
+      - MYSQL_PASSWORD=123456
+    command: --collation-server=utf8_unicode_ci --character-set-server=utf8
+    volumes:
+      - /home/sunday/workspace/docker/data/mariadb-galera/mariadb3/data:/var/lib/mysql:Z
+      - /home/sunday/workspace/docker/data/mariadb-galera/mariadb3/conf.d:/etc/mysql/conf.d
+    networks:
+      subnet:
+        ipv4_address: 172.16.239.13
+        ipv6_address: 2001:3984:3939::13
+
+  haproxy:
+    #restart: always
+    image: haproxy:1.6
+    hostname: haproxy
+    links:
+      - mariadb1:mariadb1
+      - mariadb2:mariadb2
+      - mariadb3:mariadb3
+    ports:
+      - 13306:13306
+      - 8080:8080
+    volumes:
+      - /home/sunday/workspace/docker/data/mariadb-galera/haproxy/haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg:ro
+    networks:
+      subnet:
+        ipv4_address: 172.16.239.10
+        ipv6_address: 2001:3984:3939::10
+
+networks:
+  subnet:
+    driver: bridge
+    #enable_ipv6: true
+    ipam:
+      driver: default
+      config:
+      - subnet: 172.16.239.0/24
+        gateway: 172.16.239.1
+      - subnet: 2001:3984:3939::/64
+        gateway: 2001:3984:3939::1

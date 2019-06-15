@@ -1,0 +1,95 @@
+version: '2'
+
+services:
+  percona-galera-1:
+    #restart: always
+    image: paulczar/percona-galera:latest
+    hostname: percona-galera-1
+    environment:
+      - MYSQL_ROOT_PASSWORD=123456
+      - MYSQL_USER=rsync
+      - MYSQL_PASSWORD=123456
+      - WSREP_SST_AUTH='rsync:123456'
+      - WSREP_CLUSTER_NAME=kstone_wsrep_cluster
+      - WSREP_CLUSTER_ADDRESS='gcomm://'
+      #- WSREP_NODE_ADDRESS=172.16.240.11
+    command: mysqld --wsrep-new-cluster
+    volumes:
+      - /home/sunday/workspace/docker/data/galera/percona-galera-1/data:/var/lib/mysql:Z
+      - /home/sunday/workspace/docker/data/galera/percona-galera-1/conf.d:/etc/mysql/conf.d:Z
+    networks:
+      subnet:
+        ipv4_address: 172.16.240.11
+        ipv6_address: 2001:3984:4040::11
+
+  percona-galera-2:
+    #restart: always
+    image: paulczar/percona-galera:latest
+    hostname: percona-galera-2
+    environment:
+      - MYSQL_ROOT_PASSWORD=123456
+      - MYSQL_USER=rsync
+      - MYSQL_PASSWORD=123456
+      - WSREP_SST_AUTH='rsync:123456'
+      - WSREP_CLUSTER_NAME=kstone_wsrep_cluster
+      - WSREP_CLUSTER_ADDRESS='gcomm://172.16.240.11'
+    volumes:
+      - /home/sunday/workspace/docker/data/galera/percona-galera-2/data:/var/lib/mysql:Z
+      - /home/sunday/workspace/docker/data/galera/percona-galera-2/conf.d:/etc/mysql/conf.d:Z
+    networks:
+      subnet:
+        ipv4_address: 172.16.240.12
+        ipv6_address: 2001:3984:4040::12
+    depends_on:
+      - percona-galera-1
+
+  percona-galera-3:
+    #restart: always
+    image: paulczar/percona-galera:latest
+    hostname: percona-galera-3
+    environment:
+      - MYSQL_ROOT_PASSWORD=123456
+      - MYSQL_USER=rsync
+      - MYSQL_PASSWORD=123456
+      - WSREP_SST_AUTH='rsync:123456'
+      - WSREP_CLUSTER_NAME=kstone_wsrep_cluster
+      - WSREP_CLUSTER_ADDRESS='gcomm://172.16.240.11,172.16.240.12'
+    volumes:
+      - /home/sunday/workspace/docker/data/galera/percona-galera-3/data:/var/lib/mysql:Z
+      - /home/sunday/workspace/docker/data/galera/percona-galera-3/conf.d:/etc/mysql/conf.d:Z
+    networks:
+      subnet:
+        ipv4_address: 172.16.240.13
+        ipv6_address: 2001:3984:4040::13
+    depends_on:
+      - percona-galera-1
+
+  haproxy:
+    #restart: always
+    image: haproxy:1.6
+    hostname: haproxy
+    links:
+      - percona-galera-1:percona-galera-1
+      - percona-galera-2:percona-galera-2
+      - percona-galera-3:percona-galera-3
+    ports:
+      - 13306:13306
+      - 8080:8080
+    volumes:
+      - /home/sunday/workspace/docker/data/galera/haproxy/haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg:ro
+    networks:
+      subnet:
+        ipv4_address: 172.16.240.10
+        ipv6_address: 2001:3984:4040::10
+
+networks:
+  subnet:
+    driver: bridge
+    #enable_ipv6: true
+    ipam:
+      driver: default
+      config:
+      - subnet: 172.16.240.0/24
+        gateway: 172.16.240.1
+      - subnet: 2001:3984:4040::/64
+        gateway: 2001:3984:4040::1
