@@ -1,0 +1,29 @@
+* Generate a new root key:
+openssl genrsa -out devdockerCA.key 2048
+* Generate a root certificate (enter whatever you'd like at the prompts):
+openssl req -x509 -new -nodes -key devdockerCA.key -days 10000 -out devdockerCA.crt
+* Then generate a key for your server (this is the file referenced by ssl_certificate_key in our Nginx configuration):
+openssl genrsa -out domain.key 2048
+* After you type this command, OpenSSL will prompt you to answer a few questions. Write whatever you'd like for the first few, but when OpenSSL prompts you to enter the "Common Name" make sure to type in the domain or IP of your server.
+openssl req -new -key domain.key -out dev-docker-registry.com.csr
+# Country Name (2 letter code) [AU]:
+# State or Province Name (full name) [Some-State]:
+# Locality Name (eg, city) []:
+# Organization Name (eg, company) [Internet Widgits Pty Ltd]:
+# Organizational Unit Name (eg, section) []:
+# Common Name (e.g. server FQDN or YOUR name) []:registry.local
+# Email Address []:
+# 
+# Please enter the following 'extra' attributes
+# to be sent with your certificate request
+# A challenge password []:
+# An optional company name []:
+* Next, we need to sign the certificate request:
+openssl x509 -req -in dev-docker-registry.com.csr -CA devdockerCA.crt -CAkey devdockerCA.key -CAcreateserial -out domain.crt -days 10000
+
+* Since the certificates we just generated aren't verified by any known certificate authority (e.g., VeriSign), we need to tell any clients that are going to be using this Docker registry that this is a legitimate certificate. Let's do this locally on the host machine so that we can use Docker from the Docker registry server itself
+sudo mkdir /usr/local/share/ca-certificates/docker-dev-cert
+sudo cp devdockerCA.crt /usr/local/share/ca-certificates/docker-dev-cert
+sudo update-ca-certificates
+* Restart the Docker daemon so that it picks up the changes to our certificate store:
+sudo service docker restart
