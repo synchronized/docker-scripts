@@ -1,0 +1,11 @@
+* 安装拉取镜像
+docker pull redmine
+docker pull mariadb
+
+* 修改配置
+mkdir -p ~/workspace/docker/data/redmine/
+cd ~/workspace/docker/data/redmine/
+
+mkdir -p mariadb/conf.d
+
+cp ~/workdoc/install/docker/redmine/my-huge.cnf mariadb/conf.d/
