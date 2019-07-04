@@ -1,0 +1,72 @@
+* 安装cfssl
+#+BEGIN_SRC shell
+wget -O /usr/local/bin/cfssl https://pkg.cfssl.org/R1.2/cfssl_linux-amd64
+wget -O /usr/local/bin/cfssljson https://pkg.cfssl.org/R1.2/cfssljson_linux-amd64
+wget -O /usr/local/bin/cfssl-certinfo  https://pkg.cfssl.org/R1.2/cfssl-certinfo_linux-amd64
+for cfssl in `ls /usr/local/bin/cfssl*`;do chmod +x $cfssl;done;
+#+END_SRC
+
+* 生成证书和密钥
+CA自签名
+#+BEGIN_SRC shell
+cfssl gencert -initca ldap-ca-csr.json | cfssljson -bare ca
+#+END_SRC
+
+LDAP证书签名,ldap需要的文件为：ca证书,ldap证书,ldap私钥
+#+BEGIN_SRC shell
+cfssl gencert -ca=ca.pem -ca-key=ca-key.pem -config=ca-config.json -profile=ldap ldap-csr.json | cfssljson -bare ldap
+#+END_SRC
+
+查看生成的证书
+其中  ldap-key.pem  ldap.pem ca.pem 是我们需要的
+#+BEGIN_SRC shell
+[root@master config]#ls
+ca-config.json  ca.csr  ca-key.pem  ca.pem  ldap-ca-csr.json  ldap.csr  ldap-csr.json  ldap-key.pem  ldap.pem
+#+END_SRC
+
+* 准备证书
+#+BEGIN_SRC shell
+mkdir cert/
+cp {ldap-key.pem,ldap.pem,ca.pem} ../cert/
+#+END_SRC
+
+* 客户端配置sssd
+#+BEGIN_SRC shell
+yum install sssd
+touch /etc/sssd/sssd.conf
+chown sssd:sssd /etc/sssd/sssd.conf
+chmod 600 /etc/sssd/sssd.conf
+cat > /etc/sssd/sssd.conf <<EOF
+[sssd]
+config_file_version = 2
+services = nss, pam, ssh, sudo
+domains = default
+debug_level = 3
+
+[nss]
+filter_users = root,ldap,named,avahi,haldaemon,dbus,radiusd,news,nscd
+
+[domain/default]
+debug_level = 9
+cache_credentials = true
+ldap_schema = rfc2307
+id_provider = ldap
+auth_provider = ldap
+chpass_provider = ldap
+sudo_provider = ldap
+access_provider = simple
+
+simple_allow_groups = operation,login
+
+ldap_uri = ldap://ldap.sunday.local:10389
+ldap_id_use_start_tls = true
+ldap_tls_reqcert = try
+ldap_tls_cacertdir = /etc/openldap/cacerts
+ldap_tls_cacert = /etc/openldap/cacerts/ca.pem
+ldap_search_base = dc=sunday,dc=local
+ldap_default_bind_dn = cn=readonly,dc=sunday,dc=local
+ldap_default_authtok = readonly
+ldap_user_ssh_public_key = sshPublicKey
+ldap_sudo_search_base = ou=sudoers,dc=sunday,dc=local
+EOF
+#+END_SRC
