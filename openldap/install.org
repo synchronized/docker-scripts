@@ -30,9 +30,24 @@ mkdir cert/
 cp {ldap-key.pem,ldap.pem,ca.pem} ../cert/
 #+END_SRC
 
+* 添加sudo schema
+#+BEGIN_SRC shell
+sudo cp /usr/share/doc/sudo-1.8.23/schema.OpenLDAP /etc/openldap/schema/sudo.schema
+restorecon /etc/openldap/schema/sudo.schema
+mkdir sudo
+echo "include /etc/openldap/schema/sudo.schema" > sudo/sudoSchema.conf
+slapcat -f sudo/sudoSchema.conf -F /tmp/ -n0 -s "cn={0}sudo,cn=schema,cn=config" > sudo/sudo.ldif
+sed -i "s/{0}sudo/{14}sudo/" sudo/sudo.ldif
+head -n-8 sudo/sudo.ldif > sudo/sudo-config.ldif
+cat sudo/sudo-config.ldif
+
+ldapadd  -H ldap://ldap.sunday.local:10389 -D 'cn=admin,cn=config' -ZZ -W -f ~/sudo/sudo-config.ldif
+#+END_SRC
+
 * 客户端配置sssd
 #+BEGIN_SRC shell
 yum install sssd
+authconfig --enablemkhomedir --update
 touch /etc/sssd/sssd.conf
 chown sssd:sssd /etc/sssd/sssd.conf
 chmod 600 /etc/sssd/sssd.conf
