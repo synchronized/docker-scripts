@@ -44,6 +44,8 @@ cat sudo/sudo-config.ldif
 ldapadd  -H ldap://ldap.sunday.local:10389 -D 'cn=admin,cn=config' -ZZ -W -f ~/sudo/sudo-config.ldif
 #+END_SRC
 
+
+
 * 客户端配置sssd
 #+BEGIN_SRC shell
 yum install sssd
@@ -83,5 +85,18 @@ ldap_default_bind_dn = cn=readonly,dc=sunday,dc=local
 ldap_default_authtok = readonly
 ldap_user_ssh_public_key = sshPublicKey
 ldap_sudo_search_base = ou=sudoers,dc=sunday,dc=local
+EOF
+#+END_SRC
+
+* ssh 配置
+/etc/ssh/sshd_config sshPublicKey使用sssd
+#+BEGIN_SRC shell
+sed -i "s/^PubkeyAuthentication/#PubkeyAuthentication/" /etc/ssh/sshd_config
+sed -i "s/^AuthorizedKeysCommandUser/#AuthorizedKeysCommandUser/" /etc/ssh/sshd_config
+sed -i "s/^AuthorizedKeysCommand/#AuthorizedKeysCommand/" /etc/ssh/sshd_config
+tee -a /etc/ssh/sshd_config <<EOF
+PubkeyAuthentication yes
+AuthorizedKeysCommand /usr/bin/sss_ssh_authorizedkeys
+AuthorizedKeysCommandUser nobody
 EOF
 #+END_SRC
