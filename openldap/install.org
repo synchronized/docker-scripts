@@ -50,6 +50,7 @@ ldapadd  -H ldap://ldap.sunday.local:10389 -D 'cn=admin,cn=config' -ZZ -W -f ~/s
 #+BEGIN_SRC shell
 yum install sssd
 authconfig --enablemkhomedir --update
+authconfig --enablesssd --enableldaptls --disablekrb5 --ldapserver ldap://ldap.sunday.local:10389 --ldapbasedn "dc=sunday,dc=local" --update
 touch /etc/sssd/sssd.conf
 chown sssd:sssd /etc/sssd/sssd.conf
 chmod 600 /etc/sssd/sssd.conf
