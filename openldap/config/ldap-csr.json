@@ -3,6 +3,7 @@
     "hosts": [
       "127.0.0.1",
       "192.168.56.102",
+      "192.168.56.103",
       "openldap",
       "ldap.sunday.local",
       "sunday.local"

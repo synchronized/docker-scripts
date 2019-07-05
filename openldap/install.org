@@ -26,8 +26,8 @@ ca-config.json  ca.csr  ca-key.pem  ca.pem  ldap-ca-csr.json  ldap.csr  ldap-csr
 
 * 准备证书
 #+BEGIN_SRC shell
-mkdir cert/
-cp {ldap-key.pem,ldap.pem,ca.pem} ../cert/
+mkdir -v ../cert/
+cp -v {ldap-key.pem,ldap.pem,ca.pem} ../cert/
 #+END_SRC
 
 * 添加sudo schema
@@ -49,12 +49,12 @@ ldapadd  -H ldap://ldap.sunday.local:10389 -D 'cn=admin,cn=config' -ZZ -W -f ~/s
 * 客户端配置sssd
 #+BEGIN_SRC shell
 yum install sssd
-authconfig --enablemkhomedir --update
+authconfig --enablesssd --enablesssdauth --enablemkhomedir --update
 authconfig --enablesssd --enableldaptls --disablekrb5 --ldapserver ldap://ldap.sunday.local:10389 --ldapbasedn "dc=sunday,dc=local" --update
 touch /etc/sssd/sssd.conf
-chown sssd:sssd /etc/sssd/sssd.conf
+chown root:root /etc/sssd/sssd.conf
 chmod 600 /etc/sssd/sssd.conf
-cat > /etc/sssd/sssd.conf <<EOF
+tee -a /etc/sssd/sssd.conf <<EOF
 [sssd]
 config_file_version = 2
 services = nss, pam, ssh, sudo
