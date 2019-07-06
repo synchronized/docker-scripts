@@ -109,9 +109,39 @@ EOF
 #+END_SRC
 
 * sudo 配置
-
 #+BEGIN_SRC shell
 tee -a /etc/nsswitch.conf <<EOF
 sudoers: file sss
 EOF
+#+END_SRC
+
+
+* sssd 删除缓存
+-E 删除全部缓存
+#+BEGIN_SRC shell
+sudo sss_cache -E
+#+END_SRC
+
+* samba 配置
+在 /etc/samba/smb.conf 文件中添加下面的内容
+#+BEGIN_SRC shell
+[global]
+        workgroup = SAMBA
+        security = user
+
+        #passdb backend = tdbsam
+        passdb backend = ldapsam:ldap://ldap.sunday.local:10389
+        ldap suffix = "dc=sunday,dc=local"
+        ldap group suffix = "ou=Group"
+        ldap user suffix = "ou=People"
+        ldap admin dn = "cn=admin,dc=sunday,dc=local"
+        ldap delete dn = no
+        ldap passwd sync = yes
+        ldap ssl = start tls
+        tls enabled = yes
+        tls cafile = /etc/openldap/cacerts/ca.pem
+#+END_SRC
+设置samba-ldap 管理元密码
+#+BEGIN_SRC shell
+sudo smbpasswd -W
 #+END_SRC
