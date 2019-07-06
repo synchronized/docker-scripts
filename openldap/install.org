@@ -30,7 +30,8 @@ mkdir -v ../cert/
 cp -v {ldap-key.pem,ldap.pem,ca.pem} ../cert/
 #+END_SRC
 
-* 添加sudo schema
+* openldap-sudo配置
+** 添加sudo schema
 #+BEGIN_SRC shell
 sudo cp /usr/share/doc/sudo-1.8.23/schema.OpenLDAP /etc/openldap/schema/sudo.schema
 restorecon /etc/openldap/schema/sudo.schema
@@ -41,7 +42,12 @@ sed -i "s/{0}sudo/{14}sudo/" sudo/sudo.ldif
 head -n-8 sudo/sudo.ldif > sudo/sudo-config.ldif
 cat sudo/sudo-config.ldif
 
-ldapadd  -H ldap://ldap.sunday.local:10389 -D 'cn=admin,cn=config' -ZZ -W -f ~/sudo/sudo-config.ldif
+ldapadd  -H ldap://ldap.sunday.local:10389 -D 'cn=admin,cn=config' -ZZ -W -f sudo/sudo-config.ldif
+#+END_SRC
+
+** 添加sudo data
+#+BEGIN_SRC shell
+ldapadd  -H ldap://ldap.sunday.local:10389 -D 'cn=admin,dc=sunday,dc=local' -ZZ -W -f sudo/sudo-data.ldif
 #+END_SRC
 
 
@@ -85,7 +91,7 @@ ldap_search_base = dc=sunday,dc=local
 ldap_default_bind_dn = cn=readonly,dc=sunday,dc=local
 ldap_default_authtok = readonly
 ldap_user_ssh_public_key = sshPublicKey
-ldap_sudo_search_base = ou=sudoers,dc=sunday,dc=local
+ldap_sudo_search_base = ou=Sudoers,dc=sunday,dc=local
 EOF
 #+END_SRC
 
@@ -99,5 +105,13 @@ tee -a /etc/ssh/sshd_config <<EOF
 PubkeyAuthentication yes
 AuthorizedKeysCommand /usr/bin/sss_ssh_authorizedkeys
 AuthorizedKeysCommandUser nobody
+EOF
+#+END_SRC
+
+* sudo 配置
+
+#+BEGIN_SRC shell
+tee -a /etc/nsswitch.conf <<EOF
+sudoers: file sss
 EOF
 #+END_SRC

@@ -1,0 +1,56 @@
+dn: ou=Sudoers,dc=sunday,dc=local
+objectClass: top
+objectClass: organizationalUnit
+description: SUDO Configuration Subtree
+ou: Sudoers
+
+
+dn: cn=defaults,ou=Sudoers,dc=sunday,dc=local
+objectClass: top
+objectClass: sudoRole
+cn: defaults
+description: Default sudoOption's go here
+sudoOption: requiretty
+sudoOption: !visiblepw
+sudoOption: env_reset
+
+dn: cn=root,ou=Sudoers,dc=sunday,dc=local
+objectClass: top
+objectClass: sudoRole
+cn: root
+sudoUser: root
+sudoHost: ALL
+sudoRunAsUser: ALL
+sudoCommand: ALL
+
+dn: cn=%wheel,ou=Sudoers,dc=sunday,dc=local
+objectClass: top
+objectClass: sudoRole
+cn: %wheel
+sudoUser: %wheel
+sudoHost: ALL
+sudoRunAsUser: ALL
+sudoCommand: ALL
+sudoOption: !authenticate
+
+dn: cn=%users,ou=Sudoers,dc=sunday,dc=local
+objectClass: top
+objectClass: sudoRole
+cn: %users
+sudoUser: %users
+sudoHost: ALL
+sudoRunAsUser: ALL
+sudoOption: !authenticate
+sudoCommand: ALL
+sudoCommand: !/bin/su*
+sudoCommand: !/usr/bin/vim /etc/sudoers*
+sudoCommand: !/bin/vi /etc/sudoers*
+sudoCommand: !/usr/sbin/visudo
+sudoCommand: !/usr/sbin/adduser*
+sudoCommand: !/usr/sbin/useradd*
+sudoCommand: !/usr/sbin/userdel*
+sudoCommand: !/usr/sbin/groupadd*
+sudoCommand: !/usr/sbin/groupdel*
+sudoCommand: !/bin/sh
+sudoCommand: !/bin/bash
+sudoCommand: !/usr/bin/login
