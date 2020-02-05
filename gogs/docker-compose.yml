@@ -15,9 +15,9 @@ services:
     image: gogs/gogs
     container_name: gogs
     depends_on:
-      - mysql 
+      - mysql
     volumes:
       - /home/sunday/workspace/docker/data/gogs/gogs:/data
     ports:
-      - "10222:22"
+      - "10222:10222"
       - "10280:3000"
