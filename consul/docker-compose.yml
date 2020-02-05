@@ -1,0 +1,22 @@
+version: '3'
+
+services:
+  consul-server: 
+    image: consul:latest
+    container_name: consul
+    networks:
+      - consul-network
+    ports:
+      - 8300:8300
+      - 8301:8301
+      - 8301:8301/udp
+      - 8302:8302
+      - 8302:8302/udp
+      - 8400:8400
+      - 8500:8500
+    command: "agent -server -bootstrap -client 0.0.0.0 -ui"
+
+networks:
+  consul-network:
+
+#docker run --detach --name consul --hostname consul-server-1 progrium/consul -server -bootstrap -ui-dir /ui # Get container ip for further interactions CONSUL_IP=$(docker inspect -f '{{ .NetworkSettings.IPAddress }}' consul)
