@@ -2,6 +2,7 @@ version: '2'
 services:
   mysql:
     image: mysql:latest
+    restart: always
     volumes:
     - /home/sunday/workspace/docker/data/gogs/mysql:/var/lib/mysql:Z
     environment:
@@ -13,6 +14,7 @@ services:
 
   gogs:
     image: gogs/gogs
+    restart: always
     container_name: gogs
     depends_on:
       - mysql
