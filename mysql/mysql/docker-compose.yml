@@ -2,8 +2,8 @@ version: '2'
 
 services:
   mysql57:
-    image: mysql:5.7
-    #container_name: mysql5.7
+    image: mysql
+    container_name: mysql
     environment:
     - MYSQL_ROOT_PASSWORD=123456
     - MYSQL_USER=sunday
@@ -12,9 +12,9 @@ services:
     hostname: mysql
     command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
     volumes:
-    - /home/sunday/workspace/docker/data/mysql/mysql57/conf.d:/etc/mysql/conf.d:ro
-    - /home/sunday/workspace/docker/data/mysql/mysql57/data:/var/lib/mysql:Z
-    - /home/sunday/workspace/docker/data/mysql/mysql57/log:/var/log/mysql:Z
+    - /home/sunday/workspace/docker/data/mysql/mysql/conf.d:/etc/mysql/conf.d:ro
+    - /home/sunday/workspace/docker/data/mysql/mysql/data:/var/lib/mysql:Z
+    - /home/sunday/workspace/docker/data/mysql/mysql/log:/var/log/mysql:Z
     ports:
     - 3306:3306
 
