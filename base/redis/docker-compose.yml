@@ -4,4 +4,4 @@ redis:
   ports:
     - "6379:6379"
   volumes:
-    - ./data:/data
+    - "/home/sunday/workspace/docker/data/base/redis/data:/data"
